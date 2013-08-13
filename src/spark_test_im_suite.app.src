@@ -1,0 +1,12 @@
+{application, spark_test_im_suite,
+ [
+  {description, ""},
+  {vsn, "1"},
+  {registered, []},
+  {applications, [
+                  kernel,
+                  stdlib
+                 ]},
+  {mod, { spark_test_im_suite_app, []}},
+  {env, []}
+ ]}.
