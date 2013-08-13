@@ -44,6 +44,14 @@
 -define(SERVER_HOST, get_conf_value(server_host)).
 -define(SERVER_PORT, get_conf_value(server_port)).
 
+-record(user, {
+	 membership = undefined :: atom(),
+	 jid = <<"">> :: binary(), 
+	 access_token = <<"">> ::binary(),
+ 	 email = <<"">> :: binary(),
+ 	 password = <<"">> :: binary()
+}).
+
 %%--------------------------------------------------------------------
 %% Suite configuration
 %%--------------------------------------------------------------------
@@ -124,21 +132,25 @@ ensure_stop()->
 %%--------------------------------------------------------------------
 %% Message tests
 %%--------------------------------------------------------------------
-permit_to_chat(Config)->
-   {ok, Session1} = create_chat_session(UserA, AEmail, APassword),
-   {ok, Session2} = create_chat_Session(UserB, BEmail, BPassword),
+permit_to_chat(UserA, UserB)->
+   {ok, Session1} = create_chat_session(UserAJid, 
+   				    UserAEmail, UserAPassword),
+   {ok, Session2} = create_chat_Session(UserBJid, 
+   					UserBEmail, UserBPassword),
    {ok, sent} = chat_2_way_ok(Session1, Session2, UserA, UserB).
 
-cannot_reply(Config)->
-   {ok, Session1} = create_chat_session(UserA, AEmail, APassword),
-   {ok, Session2} = create_chat_Session(UserB, BEmail, BPassword),
+cannot_reply(UserA, UserB)->
+   {ok, Session1} = create_chat_session(UserAJid, 
+   				    UserAEmail, UserAPassword),
+   {ok, Session2} = create_chat_Session(UserBJid, 
+   					UserBEmail, UserBPassword),
    {ok, sent_one_way} = chat_1_way_ok(Session1, Session2, UserA, UserB).
 
-cannot_chat(Config)->
-   {nok, not_authorized} 
-   		 = create_chat_session(UserA, AEmail, APassword),
-   {nok, not_authorized}
-   		 = create_chat_Session(UserB, BEmail, BPassword).
+cannot_chat(UserA, UserB)->
+   {nok, not_authorized} = create_chat_session(UserAJid, 
+   				    UserAEmail, UserAPassword),
+   {nok, not_authorized} = create_chat_Session(UserBJid, 
+   					UserBEmail, UserBPassword).
  
 aa2aa_2way_should_pass_story(Config) ->
 	permit_to_chat(Config).
