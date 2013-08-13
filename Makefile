@@ -2,7 +2,9 @@
 
 all: compile
 
-compile: 
+download: 
+
+compile: download
 	./rebar get-deps compile
 
 test: rebar compile
