@@ -2,6 +2,8 @@ ebin
 logs
 tags
 *.beam
+*.*~
+*.dump
 *~
 deps
 .eunit
