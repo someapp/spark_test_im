@@ -37,7 +37,7 @@ access_token_urls(Config)->
   lists:concat([BaseUrl,AccessTokenUrl]).
   
 get_idMap(Config) ->
-  escalus_config:get_config(community2brandId, Config).
+   (community2brandId, Config).
   
 get_access_token_url_for(Jid, 
 			 ResourceFullUrl,
