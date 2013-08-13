@@ -153,28 +153,45 @@ cannot_chat(UserA, UserB)->
    					UserBEmail, UserBPassword).
  
 aa2aa_2way_should_pass_story(Config) ->
-	permit_to_chat(Config).
+    UserA = get_user_setting(allaccess1, Config),
+    UserB = get_user_setting(allaccess2, Config),
+	permit_to_chat(UserA, UserB).
    
 aa2sub_2way_should_pass_story(Config) ->
- 	permit_to_chat(Config).  
+    UserA = get_user_setting(allaccess1, Config),
+    UserB = get_user_setting(subscribed1, Config),
+ 	permit_to_chat(UserA, UserB).  
 
 aa2nonsub_2way_should_pass_story(Config) ->
-	permit_to_chat(Config).
+    UserA = get_user_setting(allaccess1, Config),
+    UserB = get_user_setting(non_subscribed1, Config),
+	permit_to_chat(UserA, UserB).
 
 sub2sub_2way_should_pass_story(Config) ->
-	permit_to_chat(Config).
+    UserA = get_user_setting(subscribed1, Config),
+    UserB = get_user_setting(subscribed2, Config),
+	permit_to_chat(UserA, UserB).
 
 sub2nonsub_2way_should_block_pass_story(Config) ->
-	cannot_reply(Config).
+    UserA = get_user_setting(subscribed1, Config),
+    UserB = get_user_setting(non_subscribed1, Config),    
+	cannot_reply(UserA, UserB).
 
 nonsub2non_2way_should_block_pass_story(Config) ->
-	cannot_chat(Config).
+    UserA = get_user_setting(non_subscribed1, Config),
+    UserB = get_user_setting(non_subscribed2, Config),
+	cannot_chat(UserA, UserB).
 
 nonsub2sub_2way_should_block_pass_story(Config) ->
-	cannot_chat(Config).
+    UserA = get_user_setting(non_subscribed1, Config),
+    UserB = get_user_setting(subscribed1, Config),
+
+	cannot_chat(UserA, UserB).
 
 nonsub2aa_2way_should_block_pass_story(Config) ->           
-	cannot_chat(Config).
+    UserA = get_user_setting(non_subscribed1, Config),
+    UserB = get_user_setting(allaccess1, Config),
+	cannot_chat(UserA, UserB).
 	
 iso_8601_fmt(DateTime)->
    {{Year, Month, Day}, {Hour, Min, Sec}} = DateTime,
