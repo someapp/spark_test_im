@@ -1,0 +1,12 @@
+#!/bin/bash
+echo ${PWD}
+echo "Running Test on"
+export TESTDIR=${PWD}/test
+export TESTSCRIPT=${TESTDIR}/test.config
+export TESTLOG=${TESTDIR}/logs
+export DEPS=${PWD}/deps/*/ebin
+
+
+
+
+ct_run -config ${TESTSCRIPT} -logdir ${TESTLOG} -dir ${TESTDIR} -erl_args -pa ${PWD}/ebin ${DEPS} 
