@@ -15,7 +15,7 @@ test: rebar compile
 	./rebar skip_deps=true eunit
 
 rmexmpp:
-	@(.\rm -rf ${PWD}/deps/exmpp*)
+	@(\rm -rf ${PWD}/deps/exmpp*)
 	
 clean: rebar rmexmpp
 	./rebar clean
