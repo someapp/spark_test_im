@@ -204,6 +204,17 @@ get_user_setting(UserType, Config)
 	 access_token = AccessToken,
  	 email = Email,
  	 password = Password}.
+
+create_chat_session(Jid, Password, Server) ->
+    Session = exmpp_session:start({1,0}), 
+               % xmpp stream ver  1.0 for SASL used in http-bind
+    MyJID = exmpp_jid:make("bosh", "localhost", random),
+    exmpp_session:auth_basic(MySession, MyJID, Password),
+    %% Connect in standard TCP:
+    {ok, _StreamId, _Features} = exmpp_session:connect_BOSH(MySession,
+"http://127.0.0.1:5280/http-bind",
+"localhost", []),
+    session(MySession, MyJID).
 	
 	
 iso_8601_fmt(DateTime)->
