@@ -38,19 +38,12 @@
 ]).
 
 -include_lib("common_test/include/ct.hrl").
+-include_lib("spark_test_im.hrl").
 
 -define(COMPONENT, get_conf_value(component)).
 -define(SECRET, get_conf_value(secret)).
--define(SERVER_HOST, get_conf_value(server_host)).
--define(SERVER_PORT, get_conf_value(server_port)).
-
--record(user, {
-	 membership = undefined :: atom(),
-	 jid = <<"">> :: binary(), 
-	 access_token = <<"">> ::binary(),
- 	 email = <<"">> :: binary(),
- 	 password = <<"">> :: binary()
-}).
+-define(SERVER_HOST, spark_test_im_config:get_conf_value(server_host)).
+-define(SERVER_PORT, spark_test_im_config:get_conf_value(server_port)).
 
 %%--------------------------------------------------------------------
 %% Suite configuration
@@ -132,25 +125,25 @@ ensure_stop()->
 %%--------------------------------------------------------------------
 %% Message tests
 %%--------------------------------------------------------------------
-permit_to_chat(UserA, UserB)->
+permit_to_chat(UserA, UserB, Server)->
    {ok, Session1} = create_chat_session(UserAJid, 
-   				    UserAEmail, UserAPassword),
+   				    UserAEmail, UserAPassword, Server),
    {ok, Session2} = create_chat_Session(UserBJid, 
-   					UserBEmail, UserBPassword),
+   					UserBEmail, UserBPassword, Server),
    {ok, sent} = chat_2_way_ok(Session1, Session2, UserA, UserB).
 
-cannot_reply(UserA, UserB)->
+cannot_reply(UserA, UserB, Server)->
    {ok, Session1} = create_chat_session(UserAJid, 
-   				    UserAEmail, UserAPassword),
+   				    UserAEmail, UserAPassword, Server),
    {ok, Session2} = create_chat_Session(UserBJid, 
-   					UserBEmail, UserBPassword),
+   					UserBEmail, UserBPassword, Server),
    {ok, sent_one_way} = chat_1_way_ok(Session1, Session2, UserA, UserB).
 
 cannot_chat(UserA, UserB)->
    {nok, not_authorized} = create_chat_session(UserAJid, 
-   				    UserAEmail, UserAPassword),
+   				    UserAEmail, UserAPassword, Server),
    {nok, not_authorized} = create_chat_Session(UserBJid, 
-   					UserBEmail, UserBPassword).
+   					UserBEmail, UserBPassword, Server).
  
 aa2aa_2way_should_pass_story(Config) ->
     UserA = get_user_setting(allaccess1, Config),
@@ -192,6 +185,26 @@ nonsub2aa_2way_should_block_pass_story(Config) ->
     UserA = get_user_setting(non_subscribed1, Config),
     UserB = get_user_setting(allaccess1, Config),
 	cannot_chat(UserA, UserB).
+	
+
+	
+get_user_setting(UserType, []) -> ok;	
+get_user_setting(UserType, Config) 
+	when is_atom(UserType) ->
+    Users = ct:get_config(spark_im_users);
+    User = proplists:get_val(UserType, undefined),
+    Membership = proplists:getvalue(membership, User, undefined),
+    Jid = proplists:getvalue(username, User, undefined),
+    Email = proplists:getvalue(email, User, undefined),
+    Password = proplists:getvalue(login_password, User, undefined),
+    AccessToken = spark_im_test_util:create_password(Config),
+    #user {
+	 membership = Membership,
+	 jid = Jid, 
+	 access_token = AccessToken,
+ 	 email = Email,
+ 	 password = Password}.
+	
 	
 iso_8601_fmt(DateTime)->
    {{Year, Month, Day}, {Hour, Min, Sec}} = DateTime,

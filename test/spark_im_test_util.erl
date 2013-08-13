@@ -2,15 +2,15 @@
 -compile(export_all).
 -import(error_logger).
 
--include_lib("escalus/include/escalus.hrl").
+-include_lib("spark_test_im.hrl").
 -include_lib("common_test/include/ct.hrl").
 
-create_password(Config)->
-  Jid = escalus_config:get_config(username, Config),
-  Email = escalus_config:get_config(email, Config),
-  AppId = escalus_config:get_config(app_id, Config),
-  Password = escalus_config:get_config(login_password, Config),
-  ClientSecret = escalus_config:get_config(client_secret, Config),
+create_password(User, Config)->
+  Jid = USer#user.jid,
+  AppId = 
+  	spark_test_im_config:get_config(spark_app_id, Config),
+  ClientSecret =
+  	spark_test_im_config:get_config(spark_client_secret, Config),
  
   Url = access_token_urls(Config),
   BrandId = lookup_brandid(Jid),
@@ -31,9 +31,9 @@ create_password(Config)->
 			 ClientSecret).
 
 access_token_urls(Config)->
-  BaseUrl = escalus_config:get_config(spark_api_endpoint, Config),   
+  BaseUrl = spark_test_im_config:get_config(spark_api_endpoint, Config),   
   AccessTokenUrl = 
-	escalus_config:get_config(spark_create_oauth_accesstoken, Config),
+	spark_test_im_config:get_config(spark_create_oauth_accesstoken, Config),
   lists:concat([BaseUrl,AccessTokenUrl]).
   
 get_idMap(Config) ->
