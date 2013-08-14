@@ -8,9 +8,11 @@
 	     
 connect(UserName, Password, Host, Port)->
   Session = exmpp_session:start(),
-  Jid = exmpp_jid:make(UserName, 
-  	   
-  {ok, {Session, Jid}}.
+  Jid = spark_xmpp_user:make_jid(UserName),
+  case init_session(Session) of
+  	 loggedin -> {ok, {Session, Jid}};
+  	 not_authorized -> {ok, {Jid, not_authorized}}
+  end.
 
 disconnect(Session) ->
   catch(exmpp_session:stop(Session)),
@@ -18,15 +20,17 @@ disconnect(Session) ->
 
 init_session(Session)->
   try 
-     exmpp_session(Session) 
+     {ok, _} = exmpp_session(Session),
+     {ok, loggedin}; 
   catch
      throw:(auth_error, 'not-authorized') ->
      	{error, not_authorized}     
   end
 
-send_presence(Session) ->
+send_presence(_, not_authorized)-> {ok, not_authorized};
+send_presence(Session, loggedin) ->
   AvailableStanza = 
   	  exmp_session:set_status(
   	     exmpp_presence:presence(available , chat)),
-  
-  exmpp_session:send_packet(Session, Available).
+  exmpp_session:send_packet(Session, Available),
+  {ok, ready_to_chat}.
